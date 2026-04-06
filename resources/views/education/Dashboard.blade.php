@@ -66,7 +66,7 @@
             </div>
             @endforeach
         </div>
-
+        
         {{-- Gráficos --}}
         <div class="row mb-4">
             {{-- Promedios por curso --}}
@@ -173,56 +173,78 @@
     <x-app.footer />
 </main>
 
-@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-// Chart promedios por curso
-const ctxG = document.getElementById('chart-grades');
-if (ctxG) {
-    const chartData = @json($chartCourses);
-    new Chart(ctxG, {
-        type: 'bar',
-        data: {
-            labels: chartData.map(c => c.name),
-            datasets: [{
-                label: 'Promedio',
-                data: chartData.map(c => c.average),
-                backgroundColor: chartData.map(c => c.average >= 7 ? 'rgba(16,185,129,0.75)' : c.average >= 5 ? 'rgba(245,158,11,0.75)' : 'rgba(239,68,68,0.75)'),
-                borderRadius: 8, borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { min: 0, max: 10, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
-                x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+document.addEventListener('DOMContentLoaded', function () {
+
+    console.log("Dashboard charts cargando...");
+
+    // ===== GRÁFICA CURSOS =====
+    const ctxG = document.getElementById('chart-grades');
+
+    if (ctxG) {
+        const chartData = @json($chartCourses);
+
+        new Chart(ctxG, {
+            type: 'bar',
+            data: {
+                labels: chartData.map(c => c.name),
+                datasets: [{
+                    label: 'Promedio',
+                    data: chartData.map(c => c.average),
+                    backgroundColor: chartData.map(c =>
+                        c.average >= 7 ? 'rgba(16,185,129,0.75)' :
+                        c.average >= 5 ? 'rgba(245,158,11,0.75)' :
+                        'rgba(239,68,68,0.75)'
+                    ),
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { min: 0, max: 20 },
+                    x: { grid: { display: false } }
+                }
             }
-        }
-    });
-}
-// Chart asistencia
-const ctxA = document.getElementById('chart-attendance');
-if (ctxA) {
-    const attData = @json($attendanceStats);
-    new Chart(ctxA, {
-        type: 'line',
-        data: {
-            labels: attData.map(d => d.date),
-            datasets: [
-                { label: 'Presentes', data: attData.map(d => d.present), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4, pointRadius: 4 },
-                { label: 'Ausentes',  data: attData.map(d => d.absent),  borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)',  fill: true, tension: 0.4, pointRadius: 4 }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } },
-            scales: {
-                y: { min: 0, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
-                x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        });
+    }
+
+    // ===== GRÁFICA ASISTENCIA =====
+    const ctxA = document.getElementById('chart-attendance');
+
+    if (ctxA) {
+        const attData = @json($attendanceStats);
+
+        new Chart(ctxA, {
+            type: 'line',
+            data: {
+                labels: attData.map(d => d.date),
+                datasets: [
+                    {
+                        label: 'Presentes',
+                        data: attData.map(d => d.present),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Ausentes',
+                        data: attData.map(d => d.absent),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
             }
-        }
-    });
-}
+        });
+    }
+
+});
 </script>
-@endpush
 </x-app-layout>

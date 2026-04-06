@@ -12,8 +12,10 @@
 
             @if(auth()->user()->isAdmin() || auth()->user()->isTeacher())
             <div class="ms-auto">
-                <a href="{{ route('education.courses.create') }}" class="btn btn-dark btn-sm mb-0">
-                    <i class="fas fa-plus me-1"></i> Nuevo Curso
+                <a href="{{ route('education.courses.create') }}"
+                    class="btn btn-dark btn-sm mb-0"
+                    style="border-radius:10px;">
+                        <i class="fas fa-plus me-1"></i> Nuevo Curso
                 </a>
             </div>
             @endif

@@ -55,13 +55,13 @@ Route::middleware('auth')->prefix('education')->name('education.')->group(functi
     // Cursos — todos ven; admin/docente gestionan
     Route::get('courses',             [CourseController::class, 'index'])->name('courses.index');
     Route::get('courses/{course}',    [CourseController::class, 'show'])->name('courses.show');
-    Route::middleware('role:admin,teacher')->group(function () {
-        Route::get('courses/create',         [CourseController::class, 'create'])->name('courses.create');
+    //Route::middleware('role:admin,teacher')->group(function () {
+        Route::get('education/courses/create',         [CourseController::class, 'create'])->name('courses.create');
         Route::post('courses',               [CourseController::class, 'store'])->name('courses.store');
         Route::get('courses/{course}/edit',  [CourseController::class, 'edit'])->name('courses.edit');
         Route::put('courses/{course}',       [CourseController::class, 'update'])->name('courses.update');
         Route::delete('courses/{course}',    [CourseController::class, 'destroy'])->name('courses.destroy');
-    });
+    //});
 
     // Calificaciones — todos ven; admin/docente gestionan
     Route::get('grades',              [GradeController::class, 'index'])->name('grades.index');
