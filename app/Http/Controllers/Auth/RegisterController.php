@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -36,7 +35,7 @@ class RegisterController extends Controller
 
             'name' => 'required|min:3|max:255',
             'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:7|max:255',
+            'password' => 'required|min:8|max:255|regex:/[A-Z]/|regex:/[0-9]/',
             'terms' => 'accepted',
         ], [
             'name.required' => 'Name is required',

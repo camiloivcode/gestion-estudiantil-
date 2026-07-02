@@ -74,6 +74,7 @@ return new class extends Migration
             $table->decimal('grade_1', 4, 2)->nullable();
             $table->decimal('grade_2', 4, 2)->nullable();
             $table->decimal('grade_3', 4, 2)->nullable();
+            $table->decimal('grade_4', 4, 2)->nullable();
             $table->decimal('average', 4, 2)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

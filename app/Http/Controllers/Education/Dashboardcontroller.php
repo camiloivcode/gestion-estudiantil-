@@ -27,12 +27,21 @@ class DashboardController extends Controller
                 'average' => round((float)($c->grades->avg('average') ?? 0), 1),
             ]);
 
-        // Asistencia últimos 7 días
-        $attendanceStats = collect(range(6, 0))->map(function ($d) {
-            $date    = now()->subDays($d)->format('Y-m-d');
-            $present = Attendance::whereDate('date', $date)->where('status', 'present')->count();
-            $absent  = Attendance::whereDate('date', $date)->where('status', 'absent')->count();
-            return ['date' => now()->subDays($d)->format('d/m'), 'present' => $present, 'absent' => $absent];
+        // Asistencia últimos 7 días (una sola consulta)
+        $attendanceRaw = Attendance::selectRaw('DATE(date) as day, status, COUNT(*) as count')
+            ->whereBetween('date', [now()->subDays(6)->startOfDay(), now()->endOfDay()])
+            ->groupByRaw('DATE(date), status')
+            ->get()
+            ->groupBy(fn($r) => $r->day);
+
+        $attendanceStats = collect(range(6, 0))->map(function ($d) use ($attendanceRaw) {
+            $date = now()->subDays($d)->format('Y-m-d');
+            $dayStats = $attendanceRaw->get($date, collect());
+            return [
+                'date'    => now()->subDays($d)->format('d/m'),
+                'present' => $dayStats->where('status', 'present')->sum('count'),
+                'absent'  => $dayStats->where('status', 'absent')->sum('count'),
+            ];
         });
 
         return view('education.dashboard', compact(

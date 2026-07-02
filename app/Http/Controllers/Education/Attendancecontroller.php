@@ -7,6 +7,7 @@ use App\Models\Education\Attendance;
 use App\Models\Education\Course;
 use App\Models\Education\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -103,13 +104,23 @@ class AttendanceController extends Controller
 
     public function bulkStore(Request $request)
     {
-        $request->validate(['course_id'=>'required|exists:courses,id','date'=>'required|date','records'=>'required|array']);
-        foreach ($request->records as $r) {
-            Attendance::updateOrCreate(
-                ['student_id'=>$r['student_id'],'course_id'=>$request->course_id,'date'=>$request->date],
-                ['status'=>$r['status'],'notes'=>$r['notes']??null]
-            );
-        }
+        $request->validate([
+            'course_id'           => 'required|exists:courses,id',
+            'date'                => 'required|date',
+            'records'             => 'required|array',
+            'records.*.student_id' => 'required|exists:students,id',
+            'records.*.status'    => 'required|in:present,absent,justified',
+        ]);
+
+        DB::transaction(function () use ($request) {
+            foreach ($request->records as $r) {
+                Attendance::updateOrCreate(
+                    ['student_id'=>$r['student_id'],'course_id'=>$request->course_id,'date'=>$request->date],
+                    ['status'=>$r['status'],'notes'=>$r['notes']??null]
+                );
+            }
+        });
+
         return redirect()->route('education.attendance.index')->with('success', '✅ Lista de asistencia guardada.');
     }
 }

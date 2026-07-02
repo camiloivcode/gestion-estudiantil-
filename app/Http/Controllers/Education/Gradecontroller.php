@@ -7,6 +7,7 @@ use App\Models\Education\Course;
 use App\Models\Education\Grade;
 use App\Models\Education\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GradeController extends Controller
 {
@@ -81,14 +82,27 @@ class GradeController extends Controller
 
     public function bulkStore(Request $request)
     {
-        $request->validate(['course_id'=>'required|exists:courses,id','period'=>'required|string','grades'=>'required|array']);
-        foreach ($request->grades as $g) {
-            $avg = $this->calcAverage($g);
-            Grade::updateOrCreate(
-                ['student_id'=>$g['student_id'],'course_id'=>$request->course_id,'period'=>$request->period],
-                array_merge($g, ['average'=>$avg])
-            );
-        }
+        $request->validate([
+            'course_id'          => 'required|exists:courses,id',
+            'period'             => 'required|string|max:20',
+            'grades'             => 'required|array',
+            'grades.*.student_id' => 'required|exists:students,id',
+            'grades.*.grade_1'   => 'nullable|numeric|between:0,10',
+            'grades.*.grade_2'   => 'nullable|numeric|between:0,10',
+            'grades.*.grade_3'   => 'nullable|numeric|between:0,10',
+            'grades.*.grade_4'   => 'nullable|numeric|between:0,10',
+        ]);
+
+        DB::transaction(function () use ($request) {
+            foreach ($request->grades as $g) {
+                $avg = $this->calcAverage($g);
+                Grade::updateOrCreate(
+                    ['student_id'=>$g['student_id'],'course_id'=>$request->course_id,'period'=>$request->period],
+                    array_merge($g, ['average'=>$avg])
+                );
+            }
+        });
+
         return redirect()->route('education.grades.index')->with('success', '✅ Calificaciones guardadas en bloque.');
     }
 

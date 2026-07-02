@@ -16,9 +16,7 @@
                                 <div class="card-header pb-0 text-left bg-transparent text-center">
                                     <h3 class="font-weight-black text-dark display-6">Bienvenido</h3>
                                     <p class="mb-0">Ingresa a tu cuenta con tus credenciales<br></p>
-                                    <p class="mb-0">ejemplo:</p>
-                                    <p class="mb-0">Email: <b>admin@corporateui.com</b></p>
-                                    <p class="mb-0">Password: <b>secret</b></p>
+                                    <p class="mb-0">usa las credenciales de tu cuenta</p>
                                 </div>
                                 <div class="text-center">
                                     @if (session('status'))

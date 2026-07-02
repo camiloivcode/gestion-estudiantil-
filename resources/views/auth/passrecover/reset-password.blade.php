@@ -42,15 +42,14 @@
                                                 value="{{ old('email', $request->email) }}" required autofocus>
                                         </div>
                                         <div class="mb-3">
-                                            <input type="password" id="password" class="form-control" name="password"
+                                            <input type="password" class="form-control" name="password"
                                                 placeholder="Enter your password" aria-label="Password" id="password"
-                                                name="password"required>
+                                                required>
                                         </div>
                                         <div class="mb-3">
-                                            <input type="password" id="password_confirmation" class="form-control"
+                                            <input type="password" class="form-control"
                                                 name="password_confirmation" placeholder="Confirm your password"
-                                                aria-label="Password" id="password_confirmation"
-                                                name="password_confirmation" required>
+                                                aria-label="Confirmar contraseña" id="password_confirmation" required>
                                             <div class="text-center">
                                                 <button type="submit"
                                                     class="my-4 mb-2 btn btn-dark btn-lg w-100">Send</button>

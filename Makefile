@@ -2,8 +2,13 @@
 
 .PHONY: up down build fresh logs shell migrate seed key
 
-## Levantar todos los contenedores
+## Levantar todos los contenedores (incluye phpMyAdmin + Redis)
 up:
+	cp -n .env.docker .env || true
+	docker compose --profile dev up -d
+
+## Solo servicios principales (sin phpMyAdmin)
+up-min:
 	cp -n .env.docker .env || true
 	docker compose up -d
 
@@ -13,18 +18,20 @@ down:
 
 ## Rebuild completo (si cambias Dockerfile)
 build:
-	docker compose up -d --build
+	docker compose --profile dev up -d --build
 
 ## Primer arranque completo (build + migrate + seed)
 fresh:
 	cp .env.docker .env
-	docker compose up -d --build
-	sleep 10
+	docker compose --profile dev up -d --build
+	@echo "⏳  Esperando a que MySQL esté listo..."
+	@docker compose exec -T mysql mysqladmin ping -h localhost --silent --wait=30 2>/dev/null || true
 	docker compose exec app php artisan key:generate
 	docker compose exec app php artisan migrate:fresh --seed
 	@echo ""
 	@echo "✅  EduPlatform listo en: http://localhost:8000"
 	@echo "📊  phpMyAdmin en:        http://localhost:8080"
+	@echo "⚡  Redis en:             localhost:6379"
 	@echo ""
 	@echo "   admin@edu.com    / password123  (Admin)"
 	@echo "   garcia@edu.com   / password123  (Docente)"

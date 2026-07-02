@@ -122,7 +122,9 @@
                                         type="button"
                                         class="btn btn-xs btn-outline-danger mb-0 px-2 py-1 btn-delete"
                                         data-id="{{ $s->id }}"
-                                        data-name="{{ $s->name }}">
+                                        data-name="{{ $s->name }}"
+                                        data-resource="al estudiante"
+                                        aria-label="Eliminar estudiante">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -154,56 +156,6 @@
         @csrf
         @method('DELETE')
     </form>
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Eliminar estudiante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <p id="deleteMessage"></p>
-            </div>
-
-            <div class="modal-footer">
-                <button id="confirmDelete" class="btn btn-danger">Sí, eliminar</button>
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-
-            </div>
-        </div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            let studentId = null;
-
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            const message = document.getElementById('deleteMessage');
-            const deleteForm = document.getElementById('deleteForm');
-
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', function () {
-
-                    studentId = this.dataset.id;
-                    let name = this.dataset.name;
-
-                    message.textContent = `¿Seguro que deseas eliminar a ${name}?`;
-
-                    modal.show();
-                });
-            });
-
-            document.getElementById('confirmDelete').addEventListener('click', function () {
-
-                deleteForm.action = `/education/students/${studentId}`;
-                deleteForm.submit();
-
-            });
-
-        });
-    </script>
+    <x-app.delete-modal />
 </main>
 </x-app-layout>

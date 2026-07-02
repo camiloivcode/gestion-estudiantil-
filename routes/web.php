@@ -15,6 +15,9 @@ use App\Http\Controllers\Education\AttendanceController;
 use App\Http\Controllers\Education\TeacherController;
 use App\Http\Controllers\Education\ProgramController;
 
+// ── Healthcheck (sin auth, para plataformas cloud) ───────────────────────────
+Route::get('/health', fn() => response('OK', 200));
+
 // ── Raíz redirige al dashboard educativo ─────────────────────────────────────
 Route::get('/', fn() => redirect('/education/dashboard'))->middleware('auth');
 Route::get('/dashboard', fn() => redirect('/education/dashboard'))->name('dashboard')->middleware('auth');
@@ -30,7 +33,7 @@ Route::get('/signup',  fn() => view('account-pages.signup'))->name('signup')->mi
 Route::get('/sign-up',  [RegisterController::class, 'create'])->middleware('guest')->name('sign-up');
 Route::post('/sign-up', [RegisterController::class, 'store'])->middleware('guest');
 Route::get('/sign-in',  [LoginController::class, 'create'])->middleware('guest')->name('sign-in');
-Route::post('/sign-in', [LoginController::class, 'store'])->middleware('guest');
+Route::post('/sign-in', [LoginController::class, 'store'])->middleware('guest')->middleware('throttle:5,1');
 Route::post('/logout',  [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::get('/forgot-password',        [ForgotPasswordController::class, 'create'])->middleware('guest')->name('password.request');
@@ -55,13 +58,13 @@ Route::middleware('auth')->prefix('education')->name('education.')->group(functi
     // Cursos — todos ven; admin/docente gestionan
     Route::get('courses',             [CourseController::class, 'index'])->name('courses.index');
     Route::get('courses/{course}',    [CourseController::class, 'show'])->name('courses.show');
-    //Route::middleware('role:admin,teacher')->group(function () {
-        Route::get('education/courses/create',         [CourseController::class, 'create'])->name('courses.create');
+    Route::middleware('role:admin,teacher')->group(function () {
+        Route::get('courses/create',         [CourseController::class, 'create'])->name('courses.create');
         Route::post('courses',               [CourseController::class, 'store'])->name('courses.store');
         Route::get('courses/{course}/edit',  [CourseController::class, 'edit'])->name('courses.edit');
         Route::put('courses/{course}',       [CourseController::class, 'update'])->name('courses.update');
         Route::delete('courses/{course}',    [CourseController::class, 'destroy'])->name('courses.destroy');
-    //});
+    });
 
     // Calificaciones — todos ven; admin/docente gestionan
     Route::get('grades',              [GradeController::class, 'index'])->name('grades.index');
